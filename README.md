@@ -1,7 +1,7 @@
 ```markdown
 ## Example: Downloading Climate Data for All Models and Scenarios
 
-This example script automates the process of downloading climate data from the ESPO-G6-R2 dataset across all available model names and scenarios. It uses the `ESPO_G6_R2_Downloader` function to retrieve data for a specified region (defined by a shapefile) and saves the output in a structured format.
+This example script automates the process of downloading climate data from the ESPO-G6-R2 dataset across all available model names and scenarios. It uses the `ESPO_G6_R2_Downloader` function (defined in the external script) to retrieve data for a specified region (defined by a shapefile) and saves the output in a structured format.
 
 ### Prerequisites
 
@@ -10,14 +10,25 @@ Ensure the following Python libraries are installed:
 - `xarray` for working with NetCDF files
 - `numpy` for numerical operations
 - `siphon` for accessing THREDDS Data Server (TDS) catalogs
-- `re` for regular expressions
+- `requests` for downloading the external script
+
+### Importing the `ESPO_G6_R2_Downloader` Function
+
+To download and import the `ESPO_G6_R2_Downloader` function, you can use the following code snippet:
 
 ```python
-import geopandas as gpd
-import xarray as xr
-import numpy as np
-from siphon.catalog import TDSCatalog
-import re
+import requests
+
+# URL of the external script containing the ESPO_G6_R2_Downloader function
+url = "https://raw.githubusercontent.com/rarabzad/Pavics_tools/refs/heads/main/ESPO_G6_R2_Downloader.py?token=GHSAT0AAAAAACXAX7TPLBYTTUQ35L3BSQ7CZZSU2JA"
+
+# Download the script content
+response = requests.get(url)
+with open("ESPO_G6_R2_Downloader.py", "w") as f:
+    f.write(response.text)
+
+# Import the downloader function
+from ESPO_G6_R2_Downloader import ESPO_G6_R2_Downloader
 ```
 
 ### Workflow
@@ -28,9 +39,6 @@ import re
 
 2. **Extract Model Names and Scenarios**:
    - Using regular expressions, parse the dataset names to identify all unique model names and scenarios.
-   - Example:
-     - Model names: `["CanESM5", "MPI-ESM1-2-HR", ...]`
-     - Scenarios: `["ssp126", "ssp245", "ssp585", ...]`
 
 3. **Apply the Downloader Function for Each Model-Scenario Combination**:
    - Define the path to the shapefile representing the region of interest.
@@ -39,6 +47,12 @@ import re
 ### Example Code
 
 ```python
+import geopandas as gpd
+import xarray as xr
+import numpy as np
+from siphon.catalog import TDSCatalog
+import re
+
 # URL for the TDS catalog
 url = "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/catalog/datasets/simulations/bias_adjusted/cmip6/ouranos/ESPO-G/ESPO-G6-R2v1.0.0/catalog.xml"
 
@@ -70,4 +84,3 @@ for model_name in all_model_names:
 ### Output
 
 The output consists of multiple NetCDF files, each containing climate variables (`tasmin`, `tasmax`, `prcp`) for a specific model and scenario combination. The files are named as `Raven_input_<model_name>_<scenario>.nc`.
-```
