@@ -65,7 +65,9 @@ def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
     tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     prcp_values = ds.pr.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
-    
+    lat_values = ds.lat.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
+    lon_values = ds.lon.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
+
     # Step 5: Compute the data (if necessary)
     tasmin_values = tasmin_values.compute()  # Trigger computation
     tasmax_values = tasmax_values.compute()  # Similarly for tasmax
@@ -81,6 +83,8 @@ def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
             'tasmin': (['time', 'rlat', 'rlon'], tasmin_values.values),  # Use the extracted tasmin values
             'tasmax': (['time', 'rlat', 'rlon'], tasmax_values.values),  # Use the extracted tasmax values
             'prcp': (['time', 'rlat', 'rlon'], prcp_values.values),      # Use the extracted prcp values
+            'lat':    (['rlat', 'rlon'],         lat_values.values),     # Use the extracted lat values
+            'lon':    (['rlat', 'rlon'],         lon_values.values),     # Use the extracted lon values
         },
         coords={
             'time': ds['time'],  # Time coordinate (same as in the original dataset)
@@ -92,7 +96,9 @@ def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
     new_ds.tasmin.attrs['units'] = "degC"
     new_ds.tasmax.attrs['units'] = "degC"
     new_ds.prcp.attrs['units'] = "mm"
-    
+    new_ds.lat.attrs['units'] = "degrees_north"
+    new_ds.lon.attrs['units'] = "degrees_east"
+
     # Save the output to NetCDF
     new_ds.to_netcdf(output_file)
 
