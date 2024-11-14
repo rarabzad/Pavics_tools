@@ -20,7 +20,7 @@ def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
     # Open the dataset using xarray (this will use Dask for chunking)
     ds = xr.open_dataset(cds.access_urls["OPENDAP"], chunks="auto")  # Adjust chunking as needed
     # Step 3: Find the corresponding grid indices for min/max lat/lon
-    row_indices, col_indices = np.where((ds['lat'].values >= min_lat) & (ds['lat'].values <= max_lat)
+    row_indices, col_indices = np.where((ds['lat'].values >= min_lat) & (ds['lat'].values <= max_lat) & (ds['lon'].values >= min_lon) & (ds['lon'].values <= max_lon))
     lat_idx_min = np.min(row_indices)
     lat_idx_max = np.max(row_indices)
     lon_idx_min = np.min(col_indices)
