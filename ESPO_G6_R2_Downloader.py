@@ -1,31 +1,4 @@
 def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
-      """
-    # Purpose:
-    # The ESPO_G6_R2_Downloader function extracts climate model data for a specified region and scenario 
-    # from the ESPO-G6-R2 climate dataset and saves it as a NetCDF file. The function takes a geographic 
-    # shapefile, model name, and scenario as inputs to define the area and data specifications, then retrieves 
-    # and processes the matching climate data (minimum and maximum temperature and precipitation).
-
-    # Arguments:
-    # 1. shapefile_path (str): Path to the shapefile defining the region of interest.
-    #    - The shapefile should represent the area for which climate data is required and should contain spatial information.
-    # 2. model_name (str): Name of the climate model.
-    #    - Example: "CanESM5". This name will be used to locate the appropriate climate model dataset.
-    # 3. scenario (str): Scenario of climate data to retrieve.
-    #    - Example: "ssp585". This refers to a specific emissions or socio-economic pathway scenario from the dataset.
-
-    # Output:
-    # - A NetCDF file with climate variables (tasmin, tasmax, and prcp) for the specified region and scenario.
-    #   - File Name: Raven_input_<model_name>_<scenario>.nc
-    #   - Format: NetCDF, containing time series data of minimum temperature (°C), maximum temperature (°C), 
-    #     and precipitation (mm) for the specified region.
-
-    # Function Workflow:
-
-    # Step 1: Load and Prepare Shapefile Region
-    # - Loads the shapefile using geopandas and converts it to WGS84 (EPSG:4326) coordinate reference system.
-    # - Extracts the region's minimum and maximum latitude and longitude bounds for further grid indexing.
-    """
     # Step 1: Load the Shapefile (Region of interest)
     region = gpd.read_file(shapefile_path)
     # Ensure the region is in the same CRS as the climate data (lat/lon, WGS84)
