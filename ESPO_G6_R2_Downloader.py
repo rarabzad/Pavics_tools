@@ -1,10 +1,10 @@
-def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
-    # Step 1: Load the Shapefile (Region of interest)
-    region = gpd.read_file(shapefile_path)
-    # Ensure the region is in the same CRS as the climate data (lat/lon, WGS84)
-    region = region.to_crs(epsg=4326)
-    # Get the min/max bounds of the region (lat/lon)
-    min_lon, min_lat, max_lon, max_lat = region.total_bounds  # returns (minx, miny, maxx, maxy)
+def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
+    # Step 1: Load the Shapefile (hrus of interest)
+    hru = gpd.read_file(hrufile_path)
+    # Ensure the hru is in the same CRS as the climate data (lat/lon, WGS84)
+    hru = hru.to_crs(epsg=4326)
+    # Get the min/max bounds of the hru (lat/lon)
+    min_lon, min_lat, max_lon, max_lat = hru.total_bounds - np.array([-0.6, -0.6, 0.6, 0.6])  # returns (minx, miny, maxx, maxy) with a buffer 0.6 degree
     # Step 2: Access climate data using Siphon
     url = "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/catalog/datasets/simulations/bias_adjusted/cmip6/ouranos/ESPO-G/ESPO-G6-R2v1.0.0/catalog.xml"  # Change to your dataset URL
     cat = TDSCatalog(url)
@@ -25,7 +25,7 @@ def ESPO_G6_R2_Downloader(shapefile_path, model_name, scenario):
     lat_idx_max = np.max(row_indices)
     lon_idx_min = np.min(col_indices)
     lon_idx_max = np.max(col_indices)
-    # Step 4: Extract the subgrid (box-constrained region) for the entire time range
+    # Step 4: Extract the subgrid (box-constrained hru) for the entire time range
     tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     prcp_values = ds.pr.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
