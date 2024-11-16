@@ -11,6 +11,9 @@ Ensure the following Python libraries are installed:
 - `numpy` for numerical operations
 - `siphon` for accessing THREDDS Data Server (TDS) catalogs
 - `requests` for downloading the external script
+- `re` for for standard data anlyses
+- `shapely` for spatial data analyses
+
 
 ### Importing the `ESPO_G6_R2_Downloader` Function
 
@@ -47,11 +50,17 @@ from ESPO_G6_R2_Downloader import ESPO_G6_R2_Downloader
 ### Example Code
 
 ```python
+import requests
 import geopandas as gpd
 import xarray as xr
 import numpy as np
 from siphon.catalog import TDSCatalog
+import numpy as np
 import re
+import geopandas as gpd
+import matplotlib.pyplot as plt
+from shapely.geometry import Polygon
+from shapely.geometry import Point
 
 # URL for the TDS catalog
 url = "https://pavics.ouranos.ca/twitcher/ows/proxy/thredds/catalog/datasets/simulations/bias_adjusted/cmip6/ouranos/ESPO-G/ESPO-G6-R2v1.0.0/catalog.xml"
