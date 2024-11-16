@@ -60,11 +60,11 @@ def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
     # Create a new xarray Dataset for the output data
     new_ds = xr.Dataset(
         {
-            'tasmin': (['time', 'rlat', 'rlon'], tasmin_values.values),  # Use the extracted tasmin values
-            'tasmax': (['time', 'rlat', 'rlon'], tasmax_values.values),  # Use the extracted tasmax values
-            'prcp': (['time', 'rlat', 'rlon'], prcp_values.values),      # Use the extracted prcp values
-            'lat':    (['rlat', 'rlon'],         lat_values.values),     # Use the extracted lat values
-            'lon':    (['rlat', 'rlon'],         lon_values.values),     # Use the extracted lon values
+            'min_temperature': (['time', 'rlat', 'rlon'], tasmin_values.values),  # Use the extracted tasmin values
+            'max_temperature': (['time', 'rlat', 'rlon'], tasmax_values.values),  # Use the extracted tasmax values
+            'precipitation':   (['time', 'rlat', 'rlon'], prcp_values.values),    # Use the extracted prcp values
+            'lat':             (['rlat', 'rlon'],         lat_values.values),     # Use the extracted lat values
+            'lon':             (['rlat', 'rlon'],         lon_values.values),     # Use the extracted lon values
         },
         coords={
             'time': ds['time'],  # Time coordinate (same as in the original dataset)
@@ -72,9 +72,9 @@ def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
             'rlon': ds['rlon'][lon_idx_min:lon_idx_max],  # Longitude coordinate (subset)
         }
     )
-    new_ds.tasmin.attrs['units'] = "degC"
-    new_ds.tasmax.attrs['units'] = "degC"
-    new_ds.prcp.attrs['units'] = "mm"
+    new_ds.min_temperature.attrs['units'] = "degC"
+    new_ds.max_temperature.attrs['units'] = "degC"
+    new_ds.precipitation.attrs['units'] = "mm"
     new_ds.lat.attrs['units'] = "degrees_north"
     new_ds.lon.attrs['units'] = "degrees_east"
     # Save the output to NetCDF
