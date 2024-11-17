@@ -194,14 +194,6 @@ Finally, after all iterations are complete, the generated hydrographs are archiv
 shutil.make_archive('hydrographs.zip', 'zip', 'hydrographs')
 ```
 
----
+### Jupyter Notebook file
 
-### Conclusion
-
-This script efficiently handles the processing of climate model forcing data, updates the configuration files, runs the Raven hydrological model for each scenario, and
-
- organizes the output into a clean archive for further analysis.
-
-```
-
-This markdown version provides a structured and clear breakdown of your code, with comments explaining each step. It should be easy to copy and paste into a GitHub repository or any markdown editor.
+You can use the Jupyter Notebook file archived in this repository to reproduce the entire process.
