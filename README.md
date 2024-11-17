@@ -1,11 +1,7 @@
-Here’s the clean, readable, and well-commented version of your code in Git-renderable markdown format:
-
 ```markdown
-# Climate Model Processing Script
+## Step 1: Climate Model Processing Script
 
 This script automates the process of downloading climate models, extracting necessary data, and performing various operations related to hydrological modeling. Below is the step-by-step breakdown of the code.
-
-## Step 1: Clean Up Global Variables
 
 ```python
 # Clean up global variables to avoid interference from Python internal variables
