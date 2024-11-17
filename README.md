@@ -117,69 +117,70 @@ os.mkdir('climateForcings')
 
 # Loop through all the datasets
 for file in datasets:
-    # Extract model name and scenario from the dataset name
     start_index = file.find("ScenarioMIP_NAM_") + len("ScenarioMIP_NAM_")
     end_index = file.find("_ssp")
     model_name = file[start_index:end_index]
     scenario = file[end_index + 1:end_index + 7]
 
-    # Download the climate data using the provided downloader function
+    # Download the climate data
     ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario)
-
-    # Define the new forcing file name
     new_forcing = f"Raven_input_{model_name}_{scenario}.nc"
-
-    # Replace old forcing file names in the configuration files
+    
+    # Replace the forcing filename in the .rvt files
     replace_filename('/notebook_dir/writable-workspace/SMM_models/milk/milk.rvt', old_forcing, new_forcing)
     replace_filename('/notebook_dir/writable-workspace/SMM_models/stmary/stmary.rvt', old_forcing, new_forcing)
-
-    # Copy the new forcing file to the appropriate directories
-    shutil.copy(new_forcing, os.path.join('/notebook_dir/writable-workspace/SMM_models/stmary/input/', new_forcing))
-    shutil.copy(new_forcing, os.path.join('/notebook_dir/writable-workspace/SMM_models/milk/input/', new_forcing))
 
     # Open the forcing file to check the calendar type
     nc_file = Dataset(new_forcing, 'r')
     calendar_type = nc_file['time'].getncattr('calendar')
 
-    # Skip processing if the calendar is not 'noleap'
-    if calendar_type != 'noleap':
+    if calendar_type == 'noleap':
+        # Copy forcing files only if the calendar is 'noleap'
+        shutil.copy(new_forcing, os.path.join('/notebook_dir/writable-workspace/SMM_models/stmary/input/', new_forcing))
+        shutil.copy(new_forcing, os.path.join('/notebook_dir/writable-workspace/SMM_models/milk/input/', new_forcing))
+
+        # Extract time information
+        times = cftime.num2date(nc_file.variables['time'][:], units=nc_file.variables['time'].units)
+        new_start_date = times[1].strftime('%Y-%m-%d') + " 00:00:00"
+        new_end_date = times[-2].strftime('%Y-%m-%d') + " 00:00:00"
+        nc_file.close()
+
+        # Replace start and end dates in the .rvi files
+        replace_filename('/notebook_dir/writable-workspace/SMM_models/milk/milk.rvi', old_start_date, new_start_date)
+        replace_filename('/notebook_dir/writable-workspace/SMM_models/stmary/stmary.rvi', old_start_date, new_start_date)
+        replace_filename('/notebook_dir/writable-workspace/SMM_models/milk/milk.rvi', old_end_date, new_end_date)
+        replace_filename('/notebook_dir/writable-workspace/SMM_models/stmary/stmary.rvi', old_end_date, new_end_date)
+
+        # Run the Raven model
+        ravenpy.run(modelname='milk', configdir='/notebook_dir/writable-workspace/SMM_models/milk/')
+        ravenpy.run(modelname='stmary', configdir='/notebook_dir/writable-workspace/SMM_models/stmary/')
+
+        # Save the hydrographs
+        source_file = '/notebook_dir/writable-workspace/SMM_models/milk/output/Hydrographs.csv'
+        shutil.copy(source_file, os.path.join('hydrographs', f"milk_{os.path.splitext(new_forcing.replace('Raven_input_', ''))[0]}.csv"))
+        
+        source_file = '/notebook_dir/writable-workspace/SMM_models/stmary/output/Hydrographs.csv'
+        shutil.copy(source_file, os.path.join('hydrographs', f"stmary_{os.path.splitext(new_forcing.replace('Raven_input_', ''))[0]}.csv"))
+
+        # Clean up
+        os.remove(os.path.join('/notebook_dir/writable-workspace/SMM_models/stmary/input/', new_forcing))
+        os.remove(os.path.join('/notebook_dir/writable-workspace/SMM_models/milk/input/', new_forcing))
+
+        # Update old variables for the next iteration
+        old_forcing = new_forcing
+        old_start_date = new_start_date
+        old_end_date = new_end_date
+
+        # Archive the forcing file
+        shutil.move(new_forcing, 'climateForcings')
+
+    else:
+        # If the calendar is not 'noleap', move the file and skip processing
+        shutil.move(new_forcing, 'climateForcings')
+        old_forcing = new_forcing
+        old_start_date = new_start_date
+        old_end_date = new_end_date
         print(f"Skipping iteration {new_forcing} because calendar is not 'noleap'. Current calendar: {calendar_type}")
-        continue
-
-    # Extract the time information from the forcing file
-    times = cftime.num2date(nc_file.variables['time'][:], units=nc_file.variables['time'].units)
-    new_start_date = times[1].strftime('%Y-%m-%d') + " 00:00:00"
-    new_end_date = times[-2].strftime('%Y-%m-%d') + " 00:00:00"
-    nc_file.close()
-
-    # Replace the start and end dates in the configuration files
-    replace_filename('/notebook_dir/writable-workspace/SMM_models/milk/milk.rvi', old_start_date, new_start_date)
-    replace_filename('/notebook_dir/writable-workspace/SMM_models/stmary/stmary.rvi', old_start_date, new_start_date)
-    replace_filename('/notebook_dir/writable-workspace/SMM_models/milk/milk.rvi', old_end_date, new_end_date)
-    replace_filename('/notebook_dir/writable-workspace/SMM_models/stmary/stmary.rvi', old_end_date, new_end_date)
-
-    # Run the Raven hydrological model for both "milk" and "stmary" scenarios
-    ravenpy.run(modelname='milk', configdir='/notebook_dir/writable-workspace/SMM_models/milk/')
-    ravenpy.run(modelname='stmary', configdir='/notebook_dir/writable-workspace/SMM_models/stmary/')
-
-    # Copy the generated hydrographs to the output directory
-    source_file = '/notebook_dir/writable-workspace/SMM_models/milk/output/Hydrographs.csv'
-    shutil.copy(source_file, os.path.join('hydrographs', f"milk_{os.path.splitext(new_forcing.replace('Raven_input_', ''))[0]}.csv"))
-
-    source_file = '/notebook_dir/writable-workspace/SMM_models/stmary/output/Hydrographs.csv'
-    shutil.copy(source_file, os.path.join('hydrographs', f"stmary_{os.path.splitext(new_forcing.replace('Raven_input_', ''))[0]}.csv"))
-
-    # Clean up by removing the forcing files after use
-    os.remove(os.path.join('/notebook_dir/writable-workspace/SMM_models/stmary/input/', new_forcing))
-    os.remove(os.path.join('/notebook_dir/writable-workspace/SMM_models/milk/input/', new_forcing))
-
-    # Update the old forcing and date variables for the next iteration
-    old_forcing = new_forcing
-    old_start_date = new_start_date
-    old_end_date = new_end_date
-
-    # Move the processed forcing file to the climateForcings directory
-    shutil.move(new_forcing, 'climateForcings')
 ```
 
 ## Step 8: Archive Hydrographs
