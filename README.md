@@ -1,4 +1,4 @@
-This script automates the process of downloading climate models, extracting necessary data, and performing various operations including hydrological simulation for [St. Mary and Milk Rivers watershed](https://www.ijc.org/en/watersheds/oldman-milk-rivers). Below is the step-by-step breakdown of the code.
+This script automates the process of downloading climate models, extracting necessary data, and performing various operations including hydrological simulation for [St. Mary and Milk Rivers watershed](https://www.ijc.org/en/watersheds/oldman-milk-rivers) all complaint with [Pavics platform](https://pavics.ouranos.ca/). Below is the step-by-step breakdown of the code.
 
 ## Step 1: Clean up global environment
 Clean up global variables to avoid interference from Python internal variables
