@@ -2,7 +2,6 @@ This script automates the process of downloading climate models, extracting nece
 
 ## Step 1: Clean up global environment
 Clean up global variables to avoid interference from Python internal variables
-```markdown
 
 ```python
 # Clean up global variables to avoid interference from Python internal variables
