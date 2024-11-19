@@ -43,9 +43,9 @@ def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
     lon_idx_min = np.min(col_indices)
     lon_idx_max = np.max(col_indices)
     # Step 4: Extract the subgrid (box-constrained hru) for the entire time range
-    tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
-    tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
-    prcp_values   = ds.pr.isel    (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
+    tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) - 273.15
+    tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) - 273.15
+    prcp_values   = ds.pr.isel    (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) * 86400
     lat_values    = ds.lat.isel   (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     lon_values    = ds.lon.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     # Step 5: Compute the data (if necessary)
@@ -60,11 +60,11 @@ def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
     # Create a new xarray Dataset for the output data
     new_ds = xr.Dataset(
         {
-            'min_temperature': (['time', 'rlat', 'rlon'], tasmin_values.values),  # Use the extracted tasmin values
-            'max_temperature': (['time', 'rlat', 'rlon'], tasmax_values.values),  # Use the extracted tasmax values
-            'precipitation':   (['time', 'rlat', 'rlon'], prcp_values.values),    # Use the extracted prcp values
-            'lat':             (['rlat', 'rlon'],         lat_values.values),     # Use the extracted lat values
-            'lon':             (['rlat', 'rlon'],         lon_values.values),     # Use the extracted lon values
+            'min_temperature': (['time', 'rlat', 'rlon'], tasmin_values.values - 273.15),  # Use the extracted tasmin values
+            'max_temperature': (['time', 'rlat', 'rlon'], tasmax_values.values - 273.15),  # Use the extracted tasmax values
+            'precipitation':   (['time', 'rlat', 'rlon'], prcp_values.values * 86400),     # Use the extracted prcp values
+            'lat':             (['rlat', 'rlon'],         lat_values.values),              # Use the extracted lat values
+            'lon':             (['rlat', 'rlon'],         lon_values.values),              # Use the extracted lon values
         },
         coords={
             'time': ds['time'],  # Time coordinate (same as in the original dataset)
