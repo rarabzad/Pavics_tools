@@ -43,9 +43,9 @@ def ESPO_G6_R2_Downloader(hrufile_path, model_name, scenario):
     lon_idx_min = np.min(col_indices)
     lon_idx_max = np.max(col_indices)
     # Step 4: Extract the subgrid (box-constrained hru) for the entire time range
-    tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) - 273.15
-    tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) - 273.15
-    prcp_values   = ds.pr.isel    (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max)) * 86400
+    tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
+    tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
+    prcp_values   = ds.pr.isel    (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     lat_values    = ds.lat.isel   (rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     lon_values    = ds.lon.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     # Step 5: Compute the data (if necessary)
