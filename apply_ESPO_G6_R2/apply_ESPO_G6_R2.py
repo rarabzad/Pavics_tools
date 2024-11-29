@@ -8,22 +8,74 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     
     # Step 3: Open the .rvt file and read its contents
     with open(rvt_file_path, 'r') as file:
-        content = file.read()
+        rvt = file.read()
 
     # Step 4: Remove the existing GriddedForcing blocks from the .rvt content
     # This will remove any previous GriddedForcing configurations for precipitation and temperature
-    content_without_gridded_forcing = re.sub(r":GriddedForcing.*?:EndGriddedForcing", "", content, flags=re.DOTALL)
+    redirect_lines = re.sub(r":GriddedForcing.*?:EndGriddedForcing", "", rvt, flags=re.DOTALL).splitlines()
     
-    # Step 5: Extract any existing :RedirectToFile entries from the .rvt file
-    redirect_lines = re.findall(r"^(?!.*:GriddedForcing).*(:RedirectToFile[^\n]*)", content_without_gridded_forcing, flags=re.MULTILINE)
+    # Step 5: Splitting the rvt file contents by the break lines
+    rvt = rvt.splitlines()
     
     # Step 6: Prepend new GriddedForcing configurations for Precipitation, Max Temp, and Min Temp
-    prepend_content = """\
+    # defining some helper functions to update the templeate rvt file correction commands based on the model rvt file
+    def parse_blocks(lines):
+        """Extract blocks between :GriddedForcing and :EndGriddedForcing."""
+        blocks = {}
+        block_name = None
+        current_block = []
+        for line in lines:
+            if line.startswith(":GriddedForcing"):
+                block_name = line.split()[1]  # Get the forcing name (e.g., Precipitation)
+                current_block = [line]
+            elif line.startswith(":EndGriddedForcing"):
+                current_block.append(line)
+                if block_name:
+                    blocks[block_name] = current_block
+                block_name = None
+                current_block = []
+            elif block_name:
+                current_block.append(line)
+        return blocks
+    def update_template(template_lines, file_lines):
+        """Replace correction factor lines in template with those from the file."""
+        template_blocks = parse_blocks(template_lines)
+        file_blocks = parse_blocks(file_lines)
+        for block_name, file_block in file_blocks.items():
+            if block_name in template_blocks:
+                # Extract correction factor lines from the file block
+                correction_lines = [
+                    line for line in file_block if any(
+                        factor in line for factor in [":RainCorrection", ":SnowCorrection", ":TemperatureCorrection"]
+                    )
+                ]
+                # Replace correction lines in the template block
+                updated_block = []
+                correction_replaced = False
+
+                for line in template_blocks[block_name]:
+                    if any(factor in line for factor in [":RainCorrection", ":SnowCorrection", ":TemperatureCorrection"]):
+                        if not correction_replaced:
+                            updated_block.extend(correction_lines)  # Insert the extracted correction lines
+                            correction_replaced = True
+                    else:
+                        updated_block.append(line)
+                # Update the block in the template
+                template_blocks[block_name] = updated_block
+        # Reconstruct the updated template
+        updated_template = []
+        for block in template_blocks.values():
+            updated_template.extend(block)
+        return updated_template
+    # defning the template rvt file
+    template_rvt = """\
     :GriddedForcing            Precipitation
         :ForcingType           PRECIP
         :FileNameNC            forcing_file_path
         :VarNameNC             precipitation
         :DimNamesNC            rlon rlat time
+        :RainCorrection        1
+        :SnowCorrection        1
         :ElevationVarNameNC    elevation
         :RedirectToFile        GridWeights.txt
     :EndGriddedForcing
@@ -32,6 +84,7 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
         :FileNameNC            forcing_file_path
         :VarNameNC             max_temperature
         :DimNamesNC            rlon rlat time
+        :TemperatureCorrection 1
         :ElevationVarNameNC    elevation
         :RedirectToFile        GridWeights.txt
     :EndGriddedForcing
@@ -40,13 +93,15 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
         :FileNameNC            forcing_file_path
         :VarNameNC             min_temperature
         :DimNamesNC            rlon rlat time
+        :TemperatureCorrection 1
         :ElevationVarNameNC    elevation
         :RedirectToFile        GridWeights.txt
     :EndGriddedForcing"""
+    template_rvt = template_rvt.splitlines()
+    template_rvt = update_template(template_rvt, rvt)
     
     # Split the prepend content into lines and add the redirect lines extracted above
-    new_rvt = prepend_content.splitlines()
-    new_rvt += redirect_lines
+    new_rvt = template_rvt + redirect_lines
     
     # Step 7: Set the output filename for the NetCDF file
     output_file = f"Raven_input_{model_name}_{scenario}.nc"
@@ -125,28 +180,46 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     prcp_values = prcp_values.compute()
     lat_values = lat_values.compute()
     lon_values = lon_values.compute()
-
-    # Step 21: Define a function to fetch elevation data for a specific lat/lon point using OpenElevation API
-    def get_elevation(lat, lon):
-        """Fetch elevation for a given latitude and longitude from OpenElevation API."""
-        url = f"https://api.open-elevation.com/api/v1/lookup?locations={lat},{lon}"
-        response = requests.get(url).json()
-        if "results" in response:
-            return response['results'][0]['elevation']
-        else:
-            print(f"Error fetching elevation for {lat}, {lon}")
-            return np.nan  # Return NaN if an error occurs
     
+    # Step 21: Define a function to fetch elevation data for a specific lat/lon point using OpenElevation API
+    # Function to get elevation data from OpenElevation API
+    def get_elevations(latitudes, longitudes, chunk_size=50):
+        url = "https://api.open-elevation.com/api/v1/lookup"
+        all_elevations = []
+        # Split latitudes and longitudes into chunks
+        for i in range(0, len(latitudes), chunk_size):
+            chunk_lats = latitudes[i:i+chunk_size]
+            chunk_lons = longitudes[i:i+chunk_size]
+            # Convert latitudes and longitudes to standard Python float
+            chunk_lats = [float(lat) for lat in chunk_lats]
+            chunk_lons = [float(lon) for lon in chunk_lons]
+            # Prepare the locations for the request
+            locations = [{"latitude": lat, "longitude": lon} for lat, lon in zip(chunk_lats, chunk_lons)]
+            try:
+                # Sending a POST request with lat/lon data in JSON format
+                response = requests.post(
+                    url=url,
+                    headers={"Accept": "application/json", "Content-Type": "application/json; charset=utf-8"},
+                    data=json.dumps({"locations": locations})
+                )
+                # Check if the request was successful
+                if response.status_code == 200:
+                    elevation_data = response.json()['results']
+                    elevations = [data['elevation'] for data in elevation_data]
+                    all_elevations.extend(elevations)
+                else:
+                    print(f"Error: {response.status_code}")
+            except requests.exceptions.RequestException as e:
+                print(f"Request failed: {e}")
+            # Add delay to avoid rate-limiting or timeouts
+            time.sleep(2)
+        return all_elevations    
+    flat_lons = lon_values.values.flatten()
+    flat_lats = lat_values.values.flatten()
     # Step 22: Fetch elevation data for all grid points within the HRU region
-    elevation_values = np.full(lat_values.shape, np.nan)
-    for i in range(lat_values.shape[0]):
-        for j in range(lat_values.shape[1]):
-            lat = lat_values.values[i, j]
-            lon = lon_values.values[i, j]
-            elevation_values[i, j] = get_elevation(lat, lon)
-            if (i * lat_values.shape[1] + j) % 100 == 0:  # Optional: Print progress every 100th location
-                print(f"Fetching elevation for index {(i, j)}: {lat}, {lon}")
-
+    elevation_data = get_elevations(flat_lats, flat_lons)
+    # reshape the elevations back to the original grid shape:
+    elevation_values = np.array(elevation_data).reshape(lon_values.shape)
     # Step 23: Create a new xarray Dataset with the extracted variables (temperature, precipitation, etc.)
     new_ds = xr.Dataset(
         {
@@ -189,10 +262,10 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     # Update the start and end dates in the rvi file
     start_date_index = next(i for i, line in enumerate(rvi) if line.startswith(":StartDate"))
     end_date_index = next(i for i, line in enumerate(rvi) if line.startswith(":EndDate"))
-    rvi[start_date_index] = f":StartDate {start_date}\n"
+    rvi[start_date_index] = f":Calendar NOLEAP \n:StartDate {start_date}\n"
     rvi[end_date_index] = f":EndDate {end_date}\n"
     rvi = [line + '\n' if not line.endswith('\n') else line for line in rvi]
-    
+
     # Save the updated rvi file
     with open(rvi_file_path, 'w') as file:
         file.writelines(rvi)
@@ -232,6 +305,6 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     # Step 29: Clean up by removing the HRU shapefile and related files from the Raven model directory
     for file in glob.glob(os.path.join(Raven_model_dir, shapefile_base + '*')):
         os.remove(file)
-
+    os.chdir(cwd)
     # Step 30: Run the Raven model with the updated configuration
     ravenpy.run(modelname=model_prefix[0], configdir=Raven_model_dir)
