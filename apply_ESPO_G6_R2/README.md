@@ -1,15 +1,5 @@
-Here’s an RMarkdown (`.Rmd`) file for your Python script, formatted for GitHub. It includes Markdown syntax for explanation, Python code blocks, and a description of the process and purpose.
-
-Here’s the `.Rmd` file content reformatted:
-
----
-
-```rmarkdown
----
-title: "Raven Model Climate Simulation with ESPO-G6-R2"
-author: "Your Name"
-date: "`r Sys.Date()`"
-output: github_document
+title: "Raven Model Climate Simulation with ESPO-G6-R2 dataset"
+output: Raven model outputs under climate change
 ---
 
 ## Overview
@@ -24,8 +14,8 @@ This script automates the process of running a Raven hydrological model with cli
 
 Before running this script, ensure the following:
 
-- Python is installed.
-- The necessary libraries (`numpy`, `pandas`, `geopandas`, etc.) are installed.
+- A functional [Raven model](https://raven.uwaterloo.ca/)
+- Name of a climate model and scenario. See [here](https://github.com/Ouranosinc/ESPO-G)
 - Access to the PaVICS platform.
 
 ## Code
@@ -59,7 +49,7 @@ with zipfile.ZipFile("test.zip", 'r') as zip_ref:
     zip_ref.extractall("test")
 os.remove("test.zip")  # Clean up the ZIP file
 
-# Define file paths and model parameters
+# Define file paths and climate model name/scenario
 hrufile_path = os.path.join(os.getcwd(), "test/hru/finalcat_hru_info.shp")
 Raven_model_dir = os.path.join(os.getcwd(), "test/model")
 model_name = "TaiESM"
@@ -79,9 +69,7 @@ apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario)
 - [PaVICS Platform](https://pavics.ouranos.ca/)
 - [ESPO-G6-R2 GitHub Repository](https://github.com/Ouranosinc/ESPO-G)
 
-## Output
-
-The script generates outputs compatible with the Raven hydrological model, based on the selected climate data and scenario. The results can be used for further hydrological and climate impact analyses.
+ generates outputs compatible with the Raven hydrological model, based on the selected climate data and scenario. The results can be used for further hydrological and climate impact analyses.
 ```
 
 Save this as a `.Rmd` file and render it in RStudio or any Markdown-compatible platform to generate a GitHub-ready document.
