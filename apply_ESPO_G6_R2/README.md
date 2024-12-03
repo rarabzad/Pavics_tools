@@ -69,7 +69,5 @@ apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario)
 - [PaVICS Platform](https://pavics.ouranos.ca/)
 - [ESPO-G6-R2 GitHub Repository](https://github.com/Ouranosinc/ESPO-G)
 
- generates outputs compatible with the Raven hydrological model, based on the selected climate data and scenario. The results can be used for further hydrological and climate impact analyses.
+ generates outputs compatible with the Raven hydrological model input file, i.e. "*.rvi" file, based on the selected climate data and scenario. The results are stored under the "[Raven_model_dir]/output".
 ```
-
-Save this as a `.Rmd` file and render it in RStudio or any Markdown-compatible platform to generate a GitHub-ready document.
