@@ -95,7 +95,7 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     template_rvt = template_rvt.splitlines()
     template_rvt = update_template(template_rvt, rvt)
     # Split the prepend content into lines and add the redirect lines extracted above
-    new_rvt = template_rvt + redirect_lines
+    new_rvt = f"{template_rvt}\n{redirect_lines}"
     # Step 7: Set the output filename for the NetCDF file
     output_file = f"Raven_input_{model_name}_{scenario}.nc"
     # Step 8: Replace placeholders in the prepend content with actual file paths
