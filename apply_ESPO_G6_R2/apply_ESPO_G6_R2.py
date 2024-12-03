@@ -104,8 +104,6 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     # Step 9: Write the updated content back to the .rvt file
     with open(rvt_file_path, 'w') as file:
         file.write(new_rvt)
-    with open(rvt_file_path, 'w') as file:
-        file.write(new_rvt)
     # Step 10: Load the HRU shapefile to define the area of interest (catchment or subbasin)
     hru = gpd.read_file(hrufile_path)
     # Step 11: Ensure the HRU is in the correct CRS (WGS84 lat/lon)
@@ -116,7 +114,6 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     # Step 13: Retrieve the dataset corresponding to the given model and scenario
     datasets = [dataset for dataset in cat.datasets]
     id = [idx for idx, dataset in enumerate(cat.datasets) if model_name in dataset and scenario in dataset]
-    
     if not id:
         print(f"No matching dataset found for model: {model_name}, scenario: {scenario}")
         return
@@ -147,7 +144,6 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     prcp_values = ds.pr.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     lat_values = ds.lat.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     lon_values = ds.lon.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
-    
     points = gpd.GeoDataFrame(
         {"geometry": [Point(lon, lat) for lon, lat in zip(lon_values.values.flatten(), lat_values.values.flatten())]},
         crs="EPSG:4326",  # Use the correct CRS for latitude/longitude
