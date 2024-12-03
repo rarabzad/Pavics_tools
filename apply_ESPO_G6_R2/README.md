@@ -16,7 +16,8 @@ Before running this script, ensure the following:
 
 - A functional [Raven model](https://raven.uwaterloo.ca/)
 - Name of a climate model and scenario. See [here](https://github.com/Ouranosinc/ESPO-G)
-- Access to the PaVICS platform.
+- A landscape discretization shapefile: Ideally derived using [Basinmaker](https://hydrology.uwaterloo.ca/basinmaker/), this file is required to calculate grid weights using workflow from [here](https://github.com/julemai/GridWeightsGenerator/tree/main).
+- Access to the [PaVICS] (https://pavics.ouranos.ca/) platform.
 
 ## Code
 
