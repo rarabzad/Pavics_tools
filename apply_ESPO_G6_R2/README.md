@@ -31,6 +31,7 @@ from siphon.catalog import TDSCatalog
 from birdy import WPSClient
 import ravenpy
 from ravenpy.utilities.testdata import get_file
+from rasterio.enums import Resampling
 
 # Set environment variable
 os.environ["USE_PYGEOS"] = "0"
