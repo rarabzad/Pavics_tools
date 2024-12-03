@@ -19,7 +19,7 @@ Before running this script, ensure the following:
 
 ```python
 # Import necessary libraries
-import os, re, glob, shutil, time, json, zipfile, urllib.request, request
+import os, re, glob, shutil, time, json, zipfile, urllib.request, requests
 from itertools import product
 import numpy as np, pandas as pd, geopandas as gpd, xarray as xr
 from shapely.geometry import Point, Polygon
