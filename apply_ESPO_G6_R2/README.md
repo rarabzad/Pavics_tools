@@ -71,4 +71,3 @@ Here's the improved version of that part:
 ## outputs
 
 The script produces outputs tailored for the Raven hydrological model, based on the `*.rvi` files work orders. By default all generated results are saved in the `[Raven_model_dir]/output`.
-```
