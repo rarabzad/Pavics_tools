@@ -94,6 +94,9 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     :EndGriddedForcing"""
     template_rvt = template_rvt.splitlines()
     template_rvt = update_template(template_rvt, rvt)
+    with open("tmp.rvt", "w") as file:
+        for line in template_rvt:
+            file.write(line + "\n")    # Step 10: Load the HRU shapefile to define the area of interest (catchment or subbasin)
     # Split the prepend content into lines and add the redirect lines extracted above
     new_rvt = template_rvt + redirect_lines
     # Step 7: Set the output filename for the NetCDF file
