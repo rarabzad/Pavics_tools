@@ -1,7 +1,3 @@
-title: "Raven Model Climate Simulation with ESPO-G6-R2 dataset"
-output: Raven model outputs under climate change
----
-
 ## Overview
 
 This script automates the process of running a Raven hydrological model with climate data from the ESPO-G6-R2 dataset. The steps include:
@@ -72,7 +68,7 @@ apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario)
 
 Here's the improved version of that part:
 
----
+## outputs
 
 The script produces outputs tailored for the Raven hydrological model, based on the `*.rvi` files work orders. By default all generated results are saved in the `[Raven_model_dir]/output`.
 ```
