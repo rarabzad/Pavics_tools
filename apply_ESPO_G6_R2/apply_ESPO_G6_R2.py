@@ -101,9 +101,9 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     # Step 8: Replace placeholders in the prepend content with actual file paths
     new_rvt = [line.replace("forcing_file_path", output_file) for line in new_rvt]
     # Step 9: Write the updated content back to the .rvt file
-    with open(rvt_file_path, 'w') as file:
-        file.write(new_rvt)
-    # Step 10: Load the HRU shapefile to define the area of interest (catchment or subbasin)
+    with open(rvt_file_path, "w") as file:
+        for line in new_rvt:
+            file.write(line + "\n")    # Step 10: Load the HRU shapefile to define the area of interest (catchment or subbasin)
     hru = gpd.read_file(hrufile_path)
     # Step 11: Ensure the HRU is in the correct CRS (WGS84 lat/lon)
     hru = hru.to_crs(epsg=4326)
