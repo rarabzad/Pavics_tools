@@ -1,4 +1,16 @@
-def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
+    import os, re, glob, shutil, time, json, zipfile, urllib.request, requests
+    from itertools import product
+    import numpy as np, pandas as pd, geopandas as gpd, xarray as xr
+    from shapely.geometry import Point, Polygon
+    from shapely.ops import unary_union
+    from pyproj import CRS
+    import rasterio, rioxarray as rio
+    import cartopy.crs as ccrs
+    from siphon.catalog import TDSCatalog
+    from birdy import WPSClient
+    import ravenpy
+    from ravenpy.utilities.testdata import get_file
+    from rasterio.enums import Resampling
     # defining some helper functions to update the templeate rvt file correction commands based on the model rvt file
     def parse_blocks(lines):
         """Extract blocks between :GriddedForcing and :EndGriddedForcing."""
@@ -117,8 +129,7 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     datasets = [dataset for dataset in cat.datasets]
     id = [idx for idx, dataset in enumerate(cat.datasets) if model_name in dataset and scenario in dataset]
     if not id:
-        print(f"No matching dataset found for model: {model_name}, scenario: {scenario}")
-        return
+        raise ValueError(f"No matching dataset found for model: {model_name}, scenario: {scenario}")
     cds = cat.datasets[id[0]]
     # Step 14: Open the dataset using xarray and enable chunking for memory efficiency
     ds = xr.open_dataset(cds.access_urls["OPENDAP"], chunks="auto")
