@@ -137,9 +137,9 @@ def apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario):
     row_indices = range(rlat_ids.min(), rlat_ids.max() + 1)
     col_indices = range(rlon_ids.min(), rlon_ids.max() + 1)
     lat_idx_min = np.min(row_indices)
-    lat_idx_max = np.max(row_indices)
+    lat_idx_max = np.max(row_indices)+1
     lon_idx_min = np.min(col_indices)
-    lon_idx_max = np.max(col_indices)
+    lon_idx_max = np.max(col_indices)+1
     # Step 19: Extract the relevant data (temperature and precipitation) from the climate dataset
     tasmin_values = ds.tasmin.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
     tasmax_values = ds.tasmax.isel(rlat=slice(lat_idx_min, lat_idx_max), rlon=slice(lon_idx_min, lon_idx_max))
