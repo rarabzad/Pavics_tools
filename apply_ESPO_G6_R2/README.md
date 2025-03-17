@@ -18,26 +18,8 @@ Before running this script, ensure the following:
 ## Code
 
 ```python
-# Import necessary libraries
-import os, re, glob, shutil, time, json, zipfile, urllib.request, requests
-from itertools import product
-import numpy as np, pandas as pd, geopandas as gpd, xarray as xr
-from shapely.geometry import Point, Polygon
-from shapely.ops import unary_union
-from pyproj import CRS
-import rasterio, rioxarray as rio
-import cartopy.crs as ccrs
-from siphon.catalog import TDSCatalog
-from birdy import WPSClient
-import ravenpy
-from ravenpy.utilities.testdata import get_file
-from rasterio.enums import Resampling
-
 # Set environment variable
 os.environ["USE_PYGEOS"] = "0"
-
-# Load the ESPO-G6-R2 application script
-exec(requests.get("https://raw.githubusercontent.com/rarabzad/Pavics_tools/refs/heads/main/apply_ESPO_G6_R2/apply_ESPO_G6_R2.py").text)
 
 # Download and extract test data
 with open("test.zip", "wb") as file:
@@ -54,7 +36,7 @@ model_name = "TaiESM"
 scenario = "ssp370"
 
 # Run the ESPO-G6-R2 application
-apply_ESPO_G6_R2(hrufile_path, Raven_model_dir, model_name, scenario)
+exec(requests.get("https://raw.githubusercontent.com/rarabzad/Pavics_tools/refs/heads/main/apply_ESPO_G6_R2/apply_ESPO_G6_R2.py").text)
 ```
 
 ## Notes
