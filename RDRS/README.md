@@ -21,9 +21,8 @@ Before using the script, make sure you have the following:
 
 ### Dependencies
 
-Before using the script, make sure you have the following Python dependencies installed:
+Before using the script, make sure you have the following Python dependencies installed (Generally Pavics has these installed):
 
-- Python 3.x
 - `xarray`
 - `geopandas`
 - `numpy`
