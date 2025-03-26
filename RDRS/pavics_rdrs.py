@@ -40,6 +40,8 @@ def process_climate_data(shapefile_path):
     lat_mask = (lat >= min_lat) & (lat <= max_lat)
     lon_mask = (lon >= min_lon) & (lon <= max_lon)
     row_indices, col_indices = np.where(lat_mask & lon_mask)
+    row_indices = np.arange(np.min(row_indices), np.max(row_indices) + 1)
+    col_indices = np.arange(np.min(col_indices), np.max(col_indices) + 1)
     time_indices = generate_ids("1980-01-01", "2018-12-31")
     print(f"Found {len(row_indices)} grid points inside the bounding box.")
     
