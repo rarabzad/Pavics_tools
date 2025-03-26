@@ -126,7 +126,7 @@ def process_climate_data(shapefile_path):
     template_rvt = """\
     :GriddedForcing            Precipitation
         :ForcingType           PRECIP
-        :FileNameNC            forcing_file_path
+        :FileNameNC            climate_data.nc
         :VarNameNC             pr
         :DimNamesNC            rlon rlat time
         :RainCorrection        1
@@ -136,7 +136,7 @@ def process_climate_data(shapefile_path):
     :EndGriddedForcing
     :GriddedForcing            Maxtemp
         :ForcingType           TEMP_DAILY_MAX
-        :FileNameNC            forcing_file_path
+        :FileNameNC            climate_data.nc
         :VarNameNC             tasmax
         :DimNamesNC            rlon rlat time
         :TemperatureCorrection 1
@@ -145,7 +145,7 @@ def process_climate_data(shapefile_path):
     :EndGriddedForcing
     :GriddedForcing            Mintemp
         :ForcingType           TEMP_DAILY_MIN
-        :FileNameNC            forcing_file_path
+        :FileNameNC            climate_data.nc
         :VarNameNC             tasmin
         :DimNamesNC            rlon rlat time
         :TemperatureCorrection 1
