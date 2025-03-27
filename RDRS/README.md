@@ -57,7 +57,7 @@ The next step is to download the HRU shapefile archive (`hru.zip`) from GitHub a
 # Download and unzip the HRU shapefile
 urllib.request.urlretrieve("https://github.com/rarabzad/Pavics_tools/raw/refs/heads/main/RDRS/hru.zip", "hru.zip")
 with zipfile.ZipFile("hru.zip", 'r') as zip_ref:
-    zip_ref.extractall("hru")
+    zip_ref.extractall(os.getcwd())
 os.remove("hru.zip")
 ```
 
@@ -96,11 +96,11 @@ exec(urllib.request.urlopen("https://raw.githubusercontent.com/rarabzad/Pavics_t
 # Download and unzip the HRU shapefile
 urllib.request.urlretrieve("https://github.com/rarabzad/Pavics_tools/raw/refs/heads/main/RDRS/hru.zip", "hru.zip")
 with zipfile.ZipFile("hru.zip", 'r') as zip_ref:
-    zip_ref.extractall("hru")
+    zip_ref.extractall(os.getcwd())
 os.remove("hru.zip")
 
 # Example of calling the function with the HRU shapefile path
-shapefile_path = "/notebook_dir/writable-workspace/test/hru/finalcat_hru_info.shp"  # Replace with actual path
+shapefile_path = "/notebook_dir/writable-workspace/hru/finalcat_hru_info.shp"  # Replace with actual path
 process_climate_data(shapefile_path)
 ```
 
