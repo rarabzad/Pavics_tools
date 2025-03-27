@@ -186,6 +186,9 @@ def process_climate_data(shapefile_path):
     )
     os.system(command + " > /dev/null 2>&1")
     print("Grid weights generated successfully.")
+    print(f"A file has been written at: {os.path.join(os.getcwd(), 'climate_data.nc')}")
+    print(f"A file has been written at: {os.path.join(os.getcwd(), 'model.rvt')}")
+    print(f"A file has been written at: {os.path.join(os.getcwd(), 'GridWeights.txt')}")
 
 def generate_ids(start_date, end_date, ref_date=datetime(1980, 1, 1)):
     start_id = (datetime.strptime(start_date, "%Y-%m-%d") - ref_date).days
