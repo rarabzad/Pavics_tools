@@ -1,4 +1,4 @@
-# Pavics RDRS: Climate Data Processing and Grid Weights Generation
+# Pavics RDRS: Dailly RDRS climate Data Processing and Grid Weights Generation
 
 This repository provides a set of tools for processing climate data and generating grid weight files based on a given Hydrological Response Unit (HRU) shapefile. The `pavics_rdrs.py` script enables the extraction of daily RDRS climate data from the PAVICS database and performs spatial analysis to compute grid weights for use in hydrological models. The code is optimized for climate variables, including precipitation, minimum and maximum temperature, and elevation.  
 Note: The elevation representing the grid’s average elevation is derived from a resampled [HydroSHEDS DEM](https://www.hydrosheds.org/), rather than being calculated using geopotential height, as this variable is not available within the PAVICS-archived RDRS data.
