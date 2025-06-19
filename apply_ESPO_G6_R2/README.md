@@ -18,6 +18,9 @@ Before running this script, ensure the following:
 ## Code
 
 ```python
+import os
+import zipfile
+import requests
 # Set environment variable
 os.environ["USE_PYGEOS"] = "0"
 
