@@ -68,7 +68,7 @@ After extracting the HRU shapefile, the function `process_climate_data` is calle
 
 ```python
 # Example of calling the function with the HRU shapefile path
-shapefile_path = "/notebook_dir/writable-workspace/test/hru/finalcat_hru_info.shp"  # Replace with actual path
+shapefile_path = "/notebook_dir/writable-workspace/hru/finalcat_hru_info.shp"  # Replace with actual path
 process_climate_data(shapefile_path)
 ```
 
